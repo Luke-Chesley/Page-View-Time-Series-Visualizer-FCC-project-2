@@ -1,0 +1,32 @@
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+import seaborn as sns
+from pandas.plotting import register_matplotlib_converters
+
+
+df = pd.read_csv('fcc-forum-pageviews.csv', parse_dates = ['date'], index_col = 'date')
+
+df = df[
+        (df['value'] >= df['value'].quantile(0.025) )&
+        (df['value'] <= df['value'].quantile(0.975))]
+        
+        
+fig,ax = plt.subplots(figsize=(10,5))
+ax.plot(df.index, df['value'], 'r', linewidth=1)
+
+ax.set_title('dd')
+ax.set_xlabel('Date')
+ax.set_ylabel('Page Views')
+
+
+df['month'] = df.index.month
+df['year'] = df.index.year
+df_bar = df.groupby(['year', 'month'])['value'].mean()
+df_bar = df_bar.unstack()
+
+df_bar.plot.bar(legend=True, figsize=(10,5), ylabel = 'Average Page Views', xlabel = 'Years').figure
+
+plt.legend(['January', 'February', 'March', 'April', 'May', 'June', 'July',
+          'August', 'September', 'October', 'November', 'December']
+)
